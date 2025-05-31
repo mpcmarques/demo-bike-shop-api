@@ -20,6 +20,10 @@ export class CategoryService {
     return this.categoryModel.find().exec();
   }
 
+  async findByName(name: string): Promise<Category | null> {
+    return this.categoryModel.findOne({ name }).populate('products').exec();
+  }
+
   async addProductToCategory(product: Product): Promise<Category | null> {
     console.log(product);
 

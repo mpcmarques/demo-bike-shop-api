@@ -8,7 +8,8 @@ export const ProductSchema = new mongoose.Schema({
     ref: 'Product',
     required: false,
   },
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
+  label: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: false },
   category: {

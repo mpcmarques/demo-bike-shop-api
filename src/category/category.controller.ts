@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
 import { Category } from './interfaces/category.interface';
@@ -19,6 +26,16 @@ export class CategoryController {
   @Get()
   async findAll(): Promise<Category[]> {
     return this.categoryService.findAll();
+  }
+
+  @Public()
+  @Get(':name')
+  async findByName(@Param() params: { name: string }) {
+    const category = await this.categoryService.findByName(params.name);
+
+    if (!category) throw new NotFoundException();
+
+    return category;
   }
 
   @OnEvent('product.created')
