@@ -11,7 +11,11 @@ export const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: false },
-  category: { type: String, required: true },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: false,
+  },
   variationAttributes: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'VariationAttribute',
@@ -19,4 +23,10 @@ export const ProductSchema = new mongoose.Schema({
   listPrice: { type: Number, required: true },
   salesPrice: { type: Number, required: true },
   stock: { type: Number, default: 0 },
+  productType: {
+    type: String,
+    enum: ['single', 'composed', 'bundle'],
+    required: true,
+    default: 'single',
+  },
 });
