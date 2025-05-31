@@ -2,6 +2,9 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 import { Product } from './interfaces/product.interface';
+import { Public } from 'src/auth/auth.decorators';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/auth/role.enum';
 
 @Controller('product')
 export class ProductController {
@@ -12,6 +15,8 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @Roles(Role.Admin)
+  @Public()
   @Get()
   async findAll(): Promise<Product[]> {
     return this.productService.findAll();

@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
   city: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, default: '0' },
+  roles: { type: [String], default: ['user'] },
 });
 
 UserSchema.pre('save', async function (next) {
