@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Delete,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { User } from './interfaces/user.interface';
+import { AddToCartDto } from './dto/add-to-cart.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RemoveFromCartDto } from './dto/remove-from-cart-dto';
 
 @Controller('user')
 export class UserController {
@@ -15,5 +26,20 @@ export class UserController {
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('cart')
+  async addToCart(@Request() req, @Body() addToCartDto: AddToCartDto) {
+    return this.userService.addToCart(req.user.sub, addToCartDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('cart')
+  async removeFromCart(
+    @Request() req,
+    @Body() removeFromCartDto: RemoveFromCartDto,
+  ) {
+    return this.userService.removeFromCart(req.user.sub, removeFromCartDto);
   }
 }

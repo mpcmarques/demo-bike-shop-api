@@ -1,5 +1,10 @@
 import { Document } from 'mongoose';
+import { Product } from 'src/product/interfaces/product.interface';
 
+export interface Cart {
+  items: Array<Product>;
+  total: number;
+}
 export interface User extends Document {
   readonly firstName: string;
   readonly lastName: string;
@@ -12,4 +17,5 @@ export interface User extends Document {
   readonly password: string;
   readonly role: string;
   isValidPassword(password: string): Promise<boolean>;
+  readonly cart: Cart;
 }

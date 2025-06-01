@@ -3,6 +3,15 @@ import * as mongoose from 'mongoose';
 
 const salt = process.env.SALT || 1;
 
+const CartSchema = new mongoose.Schema({
+  total: { type: Number, required: true, default: 0 },
+  items: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Product',
+    default: [],
+  },
+});
+
 const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -14,6 +23,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   roles: { type: [String], default: ['user'] },
+  cart: { type: CartSchema, default: { total: 0, items: [] } },
 });
 
 UserSchema.pre('save', async function (next) {
