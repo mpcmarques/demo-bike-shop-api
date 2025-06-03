@@ -1,7 +1,7 @@
-import { hash, compare } from 'bcrypt';
+import { hash, compare, genSalt } from 'bcrypt';
 import * as mongoose from 'mongoose';
 
-const salt = process.env.SALT || 1;
+const saltRounds = process.env.SALT || 1;
 
 const CartSchema = new mongoose.Schema({
   total: { type: Number, required: true, default: 0 },
@@ -21,15 +21,19 @@ const UserSchema = new mongoose.Schema({
   postalCode: { type: String, required: true },
   city: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
+  salt: { type: String, required: true, select: false },
   roles: { type: [String], default: ['user'] },
   cart: { type: CartSchema, default: { total: 0, items: [] } },
 });
 
 UserSchema.pre('save', async function (next) {
+  const salt = await genSalt(1);
+
   const hashedPassword = await hash(this.password, salt);
 
   this.password = hashedPassword;
+  this.salt = salt;
 
   next();
 });

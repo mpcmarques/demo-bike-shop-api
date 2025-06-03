@@ -5,13 +5,13 @@ import {
   Body,
   Param,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
 import { Category } from './interfaces/category.interface';
 import { Public } from 'src/auth/auth.decorators';
-import { OnEvent } from '@nestjs/event-emitter';
-import { Product } from 'src/product/interfaces/product.interface';
+import { ObjectId } from 'mongoose';
 
 @Controller('category')
 export class CategoryController {
@@ -38,8 +38,28 @@ export class CategoryController {
     return category;
   }
 
-  @OnEvent('product.created')
-  async handleProductCreated(payload: Product) {
-    return this.categoryService.addProductToCategory(payload);
+  @Public()
+  @Get(':name/products')
+  async findCategoryProductsByName(
+    @Param() params: { name: string },
+    @Query('productType') productType: string,
+  ) {
+    const category = await this.categoryService.findByName(params.name);
+
+    if (!category) throw new NotFoundException();
+
+    const products = await this.categoryService.findCategoryProducts(
+      category._id as ObjectId,
+      productType,
+    );
+
+    if (!category) throw new NotFoundException();
+
+    return { category, products };
   }
+
+  // @OnEvent('product.created')
+  // async handleProductCreated(payload: Product) {
+  //   return this.categoryService.addProductToCategory(payload);
+  // }
 }

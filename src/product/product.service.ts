@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { Injectable, Inject } from '@nestjs/common';
 import { Product } from './interfaces/product.interface';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -29,7 +29,65 @@ export class ProductService {
   }
 
   async findByName(name: string): Promise<Product | null> {
-    return this.productModel.findOne({ name });
+    let product = await this.productModel
+      .findOne({ name })
+      .populate('masterProduct')
+      .exec();
+
+    if (product) {
+      let variants = [];
+
+      const productType = product.get('productType') as string;
+
+      if (productType === 'master') {
+        variants = await this.productModel.find({ masterProduct: product });
+
+        product = {
+          ...product.toObject(),
+          // @ts-ignore
+          variants: variants,
+        };
+      } else if (productType == 'variant' && product.masterProduct) {
+        variants = await this.productModel.find({
+          masterProduct: product.masterProduct,
+        });
+
+        // @ts-ignore
+        product = {
+          ...product.toObject(),
+          // @ts-ignore
+          variants: [],
+          // @ts-ignore
+          masterProduct: {
+            // @ts-ignore
+            ...product.masterProduct?.toObject(),
+            // @ts-ignore
+            variants: variants,
+          },
+        };
+      }
+    }
+
+    return product;
+  }
+
+  async search(name: string, productType?: string): Promise<Product[] | null> {
+    const query: {
+      $text: { $search: string };
+      productType?: string;
+    } = { $text: { $search: name } };
+
+    if (productType) query.productType = productType;
+
+    return this.productModel.find(query);
+  }
+
+  async findByCategory(category: ObjectId, productType?: string) {
+    const query: { category: ObjectId; productType?: string } = { category };
+
+    if (productType) query.productType = productType;
+
+    return this.productModel.find(query);
   }
 
   async findById(id: string): Promise<Product | null> {

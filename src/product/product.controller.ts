@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 import { Product } from './interfaces/product.interface';
@@ -26,5 +26,14 @@ export class ProductController {
   @Get(':name')
   async findByName(@Param() params: { name: string }): Promise<Product | null> {
     return this.productService.findByName(params.name);
+  }
+
+  @Public()
+  @Get('/search/:name')
+  async search(
+    @Param() params: { name: string },
+    @Query('productType') productType: string,
+  ): Promise<Product[] | null> {
+    return this.productService.search(params.name, productType);
   }
 }

@@ -8,10 +8,4 @@ export const productProviders = [
       connection.model('Product', ProductSchema),
     inject: ['DATABASE_CONNECTION'],
   },
-  {
-    provide: 'VARIATION_ATTRIBUTE_MODEL',
-    useFactory: (connection: Connection) =>
-      connection.model('VariationAttribute', ProductSchema),
-    inject: ['DATABASE_CONNECTION'],
-  },
 ];

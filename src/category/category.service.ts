@@ -1,14 +1,16 @@
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { Injectable, Inject } from '@nestjs/common';
 import { Category } from './interfaces/category.interface';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Product } from 'src/product/interfaces/product.interface';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @Inject('CATEGORY_MODEL')
     private categoryModel: Model<Category>,
+    private productService: ProductService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
@@ -21,12 +23,14 @@ export class CategoryService {
   }
 
   async findByName(name: string): Promise<Category | null> {
-    return this.categoryModel.findOne({ name }).populate('products').exec();
+    return this.categoryModel.findOne({ name });
+  }
+
+  async findCategoryProducts(categoryId: ObjectId, producType?: string) {
+    return this.productService.findByCategory(categoryId, producType);
   }
 
   async addProductToCategory(product: Product): Promise<Category | null> {
-    console.log(product);
-
     return this.categoryModel.findByIdAndUpdate(product.category, {
       $addToSet: { products: product },
     });
