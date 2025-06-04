@@ -41,4 +41,12 @@ export class CategoryService {
       $pull: { products: product },
     });
   }
+
+  async search(name: string): Promise<Category[] | null> {
+    const query: {
+      $text: { $search: string };
+    } = { $text: { $search: name } };
+
+    return this.categoryModel.find(query);
+  }
 }

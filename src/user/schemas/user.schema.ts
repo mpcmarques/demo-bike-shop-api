@@ -1,7 +1,7 @@
-import { hash, compare, genSalt } from 'bcrypt';
+import { hash, genSalt } from 'bcrypt';
 import * as mongoose from 'mongoose';
 
-const saltRounds = process.env.SALT || 1;
+const saltRounds = process.env.SALT_ROUNDS || 1;
 
 const CartSchema = new mongoose.Schema({
   total: { type: Number, required: true, default: 0 },
@@ -21,14 +21,14 @@ const UserSchema = new mongoose.Schema({
   postalCode: { type: String, required: true },
   city: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true, select: false },
-  salt: { type: String, required: true, select: false },
+  password: { type: String, required: true },
+  salt: { type: String, required: true },
   roles: { type: [String], default: ['user'] },
   cart: { type: CartSchema, default: { total: 0, items: [] } },
 });
 
 UserSchema.pre('save', async function (next) {
-  const salt = await genSalt(1);
+  const salt = await genSalt(saltRounds as number);
 
   const hashedPassword = await hash(this.password, salt);
 
@@ -41,7 +41,11 @@ UserSchema.pre('save', async function (next) {
 UserSchema.method(
   'isValidPassword',
   async function (password: string): Promise<boolean> {
-    return await compare(password, this.password);
+    const hashedPassword = await hash(password, this.salt);
+
+    console.log(hashedPassword, this.password);
+
+    return hashedPassword === this.password;
   },
 );
 

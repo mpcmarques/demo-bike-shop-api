@@ -58,8 +58,9 @@ export class CategoryController {
     return { category, products };
   }
 
-  // @OnEvent('product.created')
-  // async handleProductCreated(payload: Product) {
-  //   return this.categoryService.addProductToCategory(payload);
-  // }
+  @Public()
+  @Get('/search/:name')
+  async search(@Param() params: { name: string }): Promise<Category[] | null> {
+    return this.categoryService.search(params.name);
+  }
 }

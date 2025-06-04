@@ -2,6 +2,19 @@ import { randomUUID } from 'crypto';
 import * as mongoose from 'mongoose';
 import { VariationAttributeSchema } from './variationAttribute.schema';
 
+export const ComposedProductsSchema = new mongoose.Schema({
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: false,
+  },
+  products: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Product',
+    required: false,
+  },
+});
+
 export const ProductSchema = new mongoose.Schema({
   sku: { type: mongoose.Schema.Types.UUID, default: () => randomUUID() },
   masterProduct: {
@@ -31,6 +44,11 @@ export const ProductSchema = new mongoose.Schema({
     enum: ['master', 'variant', 'composed'],
     required: true,
     default: 'master',
+  },
+  composed: {
+    type: ComposedProductsSchema,
+    required: false,
+    default: null,
   },
 });
 

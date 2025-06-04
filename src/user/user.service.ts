@@ -57,13 +57,15 @@ export class UserService {
 
     if (!user) return null;
 
-    const itemIndex = user.cart.items.findIndex((item) => item.equals(product));
+    const itemIndex = user.cart.items.findIndex((item) =>
+      item.equals(product.id),
+    );
 
     if (itemIndex !== -1) {
       user.cart.items.splice(itemIndex, 1);
       user.cart.total -= product.salesPrice;
+      user.cart.total = user.cart.total -= product.salesPrice;
     }
-    user.cart.total = user.cart.total -= product.salesPrice;
 
     return user.save();
   }

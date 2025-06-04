@@ -5,3 +5,5 @@ export const CategorySchema = new mongoose.Schema({
   label: { type: String, required: true },
   description: { type: String, required: true },
 });
+
+CategorySchema.index({ label: 'text' });
