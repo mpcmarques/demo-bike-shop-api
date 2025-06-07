@@ -5,6 +5,7 @@ export interface Product extends Document {
   readonly sku: string;
   readonly masterProduct?: Product;
   readonly name: string;
+  readonly label: string;
   readonly description: string;
   readonly image?: string;
   readonly category: string;
@@ -13,4 +14,5 @@ export interface Product extends Document {
   readonly salesPrice: number;
   readonly stock: number;
   readonly composed: { category: Category; product: Product }[][];
+  readonly productType?: 'master' | 'variant' | 'composed';
 }

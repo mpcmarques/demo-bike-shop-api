@@ -40,7 +40,12 @@ export class UserService {
 
     if (!user) return null;
 
-    user.cart.items.push(product);
+    user.cart.items.push({
+      product: product,
+      quantity: addToCartDto.quantity || 1,
+      combination: addToCartDto.combination,
+    });
+
     user.cart.total = user.cart.total += product.salesPrice;
 
     return user.save();
@@ -58,13 +63,19 @@ export class UserService {
     if (!user) return null;
 
     const itemIndex = user.cart.items.findIndex((item) =>
-      item.equals(product.id),
+      item.product.equals(product.id),
     );
 
     if (itemIndex !== -1) {
       user.cart.items.splice(itemIndex, 1);
-      user.cart.total -= product.salesPrice;
-      user.cart.total = user.cart.total -= product.salesPrice;
+
+      let total = 0;
+
+      user.cart.items.forEach((item) => {
+        total += item.product.salesPrice * item.quantity;
+      });
+
+      user.cart.total = total;
     }
 
     return user.save();

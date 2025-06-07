@@ -24,29 +24,72 @@ export class ProductService {
     return result;
   }
 
-  async findAll(): Promise<Product[]> {
-    return this.productModel.find().exec();
+  async update(updateProductDto: CreateProductDto) {
+    // console.log(updateProductDto);
+    const {
+      name,
+      label,
+      description,
+      category,
+      variationAttributes,
+      listPrice,
+      salesPrice,
+      stock,
+      productType,
+      masterProduct,
+      composed,
+    } = updateProductDto;
+
+    const result = this.productModel.findOneAndUpdate(
+      { name: updateProductDto.name },
+      {
+        name,
+        label,
+        description,
+        category,
+        variationAttributes,
+        listPrice,
+        salesPrice,
+        stock,
+        productType,
+        masterProduct,
+        composed,
+      },
+    );
+
+    return result;
+  }
+
+  async findAll(limit: number = 10, skip: number = 0): Promise<Product[]> {
+    return this.productModel.find().limit(limit).skip(skip).exec();
   }
 
   async findByName(name: string): Promise<Product | null> {
     let product = await this.productModel
       .findOne({ name })
-      .populate([
-        'masterProduct',
-        {
-          path: 'composed',
-          populate: [
-            {
-              path: 'product',
+      .populate('variants')
+      .populate('masterProduct')
+      .populate({
+        path: 'composed',
+        populate: [
+          {
+            path: 'product',
+            model: 'Product',
+            populate: {
+              path: 'variants',
               model: 'Product',
+              populate: {
+                path: 'masterProduct',
+                model: 'Product',
+              },
             },
-            {
-              path: 'category',
-              model: 'Category',
-            },
-          ],
-        },
-      ])
+          },
+          {
+            path: 'category',
+            model: 'Category',
+          },
+        ],
+      })
       .exec();
 
     if (product) {
@@ -54,15 +97,7 @@ export class ProductService {
 
       const productType = product.get('productType') as string;
 
-      if (productType === 'master') {
-        variants = await this.productModel.find({ masterProduct: product });
-
-        product = {
-          ...product.toObject(),
-          // @ts-ignore
-          variants: variants,
-        };
-      } else if (productType == 'variant' && product.masterProduct) {
+      if (productType == 'variant' && product.masterProduct) {
         variants = await this.productModel.find({
           masterProduct: product.masterProduct,
         });
@@ -82,6 +117,8 @@ export class ProductService {
         };
       }
     }
+
+    console.log(product);
 
     return product;
   }

@@ -1,8 +1,13 @@
 import { Document } from 'mongoose';
 import { Product } from 'src/product/interfaces/product.interface';
 
+export interface ProductCartItem {
+  readonly product: Product;
+  readonly quantity: number;
+  readonly combination?: Product[];
+}
 export interface Cart {
-  items: Array<Product>;
+  items: Array<ProductCartItem>;
   total: number;
 }
 export interface User extends Document {

@@ -5,11 +5,20 @@ const saltRounds = process.env.SALT_ROUNDS || 1;
 
 const CartSchema = new mongoose.Schema({
   total: { type: Number, required: true, default: 0 },
-  items: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Product',
-    default: [],
-  },
+  items: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+      combination: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Product',
+        required: false,
+      },
+      quantity: { type: Number, required: true, default: 1 },
+    },
+  ],
 });
 
 const UserSchema = new mongoose.Schema({
@@ -28,12 +37,14 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', async function (next) {
-  const salt = await genSalt(saltRounds as number);
+  if (!this.salt) {
+    const salt = await genSalt(saltRounds as number);
 
-  const hashedPassword = await hash(this.password, salt);
+    const hashedPassword = await hash(this.password, salt);
 
-  this.password = hashedPassword;
-  this.salt = salt;
+    this.password = hashedPassword;
+    this.salt = salt;
+  }
 
   next();
 });
@@ -41,6 +52,8 @@ UserSchema.pre('save', async function (next) {
 UserSchema.method(
   'isValidPassword',
   async function (password: string): Promise<boolean> {
+    console.log(password, this.salt);
+
     const hashedPassword = await hash(password, this.salt);
 
     console.log(hashedPassword, this.password);

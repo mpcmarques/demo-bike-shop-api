@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Put } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 import { Product } from './interfaces/product.interface';
@@ -15,11 +15,19 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-  @Roles(Role.Admin)
+  @Put()
+  async update(@Body() updateProductDto: CreateProductDto) {
+    return this.productService.update(updateProductDto);
+  }
+
   @Public()
+  @Roles(Role.Admin)
   @Get()
-  async findAll(): Promise<Product[]> {
-    return this.productService.findAll();
+  async findAll(
+    @Query('limit') limit: number,
+    @Query('skip') skip: number,
+  ): Promise<Product[]> {
+    return this.productService.findAll(limit, skip);
   }
 
   @Public()
