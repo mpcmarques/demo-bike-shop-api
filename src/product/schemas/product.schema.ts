@@ -8,8 +8,8 @@ export const ComposedProductsSchema = new mongoose.Schema({
     ref: 'Category',
     required: false,
   },
-  products: {
-    type: [mongoose.Schema.Types.ObjectId],
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
     required: false,
   },
@@ -46,10 +46,90 @@ export const ProductSchema = new mongoose.Schema({
     default: 'master',
   },
   composed: {
-    type: ComposedProductsSchema,
+    type: [[ComposedProductsSchema]],
+    required: false,
+    default: null,
+  },
+  variants: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+    ],
     required: false,
     default: null,
   },
 });
+
+ProductSchema.post('save', async function (doc) {
+  // If this product is not a master and has a masterProduct reference
+  if (doc.productType !== 'master' && doc.masterProduct) {
+    try {
+      // Get the Product model
+      const Product = mongoose.model('Product');
+
+      // Find the master product and add this product to its variants if not already present
+      await Product.findByIdAndUpdate(
+        doc.masterProduct,
+        {
+          $addToSet: { variants: doc._id }, // $addToSet prevents duplicates
+        },
+        { new: true },
+      );
+    } catch (error) {
+      console.error('Error updating master product variants:', error);
+    }
+  }
+});
+
+// ProductSchema.post('findOneAndDelete', async function (doc) {
+//   // If the deleted product is not a master and has a masterProduct reference
+//   if (doc && doc.productType !== 'master' && doc.masterProduct) {
+//     try {
+//       // Get the Product model
+//       const Product = mongoose.model('Product');
+
+//       // Remove this product from the master product's variants array
+//       await Product.findByIdAndUpdate(
+//         doc.masterProduct,
+//         {
+//           $pull: { variants: doc._id }, // $pull removes the specific ID
+//         },
+//         { new: true },
+//       );
+//     } catch (error) {
+//       console.error('Error removing variant from master product:', error);
+//     }
+//   }
+// });
+
+// ProductSchema.post('deleteOne', async function () {
+//   // Get the document that was deleted using the query conditions
+//   const deletedDoc = await this.model.findOne(this.getQuery());
+
+//   // If the deleted product is not a master and has a masterProduct reference
+//   if (
+//     deletedDoc &&
+//     deletedDoc.productType !== 'master' &&
+//     deletedDoc.masterProduct
+//   ) {
+//     try {
+//       // Get the Product model
+//       const Product = mongoose.model('Product');
+
+//       // Remove this product from the master product's variants array
+//       await Product.findByIdAndUpdate(
+//         deletedDoc.masterProduct,
+//         {
+//           $pull: { variants: deletedDoc._id },
+//         },
+//         { new: true },
+//       );
+//     } catch (error) {
+//       console.error('Error removing variant from master product:', error);
+//     }
+//   }
+// });
 
 ProductSchema.index({ label: 'text' });

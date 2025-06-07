@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { Category } from 'src/category/interfaces/category.interface';
 
 export interface Product extends Document {
   readonly sku: string;
@@ -11,4 +12,5 @@ export interface Product extends Document {
   readonly listPrice: number;
   readonly salesPrice: number;
   readonly stock: number;
+  readonly composed: { category: Category; product: Product }[][];
 }

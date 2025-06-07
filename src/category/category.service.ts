@@ -26,8 +26,11 @@ export class CategoryService {
     return this.categoryModel.findOne({ name });
   }
 
-  async findCategoryProducts(categoryId: ObjectId, producType?: string) {
-    return this.productService.findByCategory(categoryId, producType);
+  async findCategoryProducts(
+    categoryId: ObjectId,
+    productType?: string | string[],
+  ) {
+    return this.productService.findByCategory(categoryId, productType);
   }
 
   async addProductToCategory(product: Product): Promise<Category | null> {

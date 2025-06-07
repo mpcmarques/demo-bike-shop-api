@@ -31,7 +31,22 @@ export class ProductService {
   async findByName(name: string): Promise<Product | null> {
     let product = await this.productModel
       .findOne({ name })
-      .populate('masterProduct')
+      .populate([
+        'masterProduct',
+        {
+          path: 'composed',
+          populate: [
+            {
+              path: 'product',
+              model: 'Product',
+            },
+            {
+              path: 'category',
+              model: 'Category',
+            },
+          ],
+        },
+      ])
       .exec();
 
     if (product) {
@@ -71,21 +86,36 @@ export class ProductService {
     return product;
   }
 
-  async search(name: string, productType?: string): Promise<Product[] | null> {
+  async search(
+    name: string,
+    productType?: string,
+    category?: string,
+  ): Promise<Product[] | null> {
     const query: {
       $text: { $search: string };
       productType?: string;
+      category?: string;
     } = { $text: { $search: name } };
 
     if (productType) query.productType = productType;
+    if (category) query.category = category;
 
     return this.productModel.find(query);
   }
 
-  async findByCategory(category: ObjectId, productType?: string) {
-    const query: { category: ObjectId; productType?: string } = { category };
+  async findByCategory(category: ObjectId, productType?: string | string[]) {
+    const query: {
+      category: ObjectId;
+      productType?: string | { $in: string[] };
+    } = { category };
 
-    if (productType) query.productType = productType;
+    if (productType) {
+      if (Array.isArray(productType)) {
+        query.productType = { $in: productType };
+      } else {
+        query.productType = productType;
+      }
+    }
 
     return this.productModel.find(query);
   }

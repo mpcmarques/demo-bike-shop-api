@@ -33,7 +33,8 @@ export class ProductController {
   async search(
     @Param() params: { name: string },
     @Query('productType') productType: string,
+    @Query('category') category: string,
   ): Promise<Product[] | null> {
-    return this.productService.search(params.name, productType);
+    return this.productService.search(params.name, productType, category);
   }
 }

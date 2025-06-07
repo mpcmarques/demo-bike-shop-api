@@ -42,7 +42,7 @@ export class CategoryController {
   @Get(':name/products')
   async findCategoryProductsByName(
     @Param() params: { name: string },
-    @Query('productType') productType: string,
+    @Query('productType') productType: string | string[],
   ) {
     const category = await this.categoryService.findByName(params.name);
 
