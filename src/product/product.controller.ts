@@ -21,7 +21,6 @@ export class ProductController {
   }
 
   @Public()
-  @Roles(Role.Admin)
   @Get()
   async findAll(
     @Query('limit') limit: number,
