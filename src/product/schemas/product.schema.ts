@@ -29,7 +29,7 @@ export const ProductSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    default: 'https://picsum.photos/300',
+    default: 'https://picsum.photos/300?random=1',
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
