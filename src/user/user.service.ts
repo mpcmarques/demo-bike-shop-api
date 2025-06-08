@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProductService } from 'src/product/product.service';
@@ -27,16 +27,31 @@ export class UserService {
   async findOne(email: string): Promise<User | null | undefined> {
     return this.userModel
       .findOne({ email: email })
-      .populate('cart.items')
+      .populate('cart.items.product')
+      .populate('cart.items.combination')
       .exec();
   }
 
   async addToCart(userId: string, addToCartDto: AddToCartDto) {
     const product = await this.productService.findById(addToCartDto.productId);
 
-    if (!product || product.stock <= 0) return null;
+    if (!product)
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
 
-    const user = await this.userModel.findById(userId);
+    if (product.productType === 'master')
+      throw new HttpException(
+        'Can`t add master products',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+
+    if (product.productType === 'variant' && product.stock === 0)
+      throw new HttpException('No stock', HttpStatus.NOT_ACCEPTABLE);
+
+    const user = await this.userModel
+      .findById(userId)
+      .populate('cart.items.product')
+      .populate('cart.items.combination')
+      .exec();
 
     if (!user) return null;
 
@@ -46,7 +61,17 @@ export class UserService {
       combination: addToCartDto.combination,
     });
 
-    user.cart.total = user.cart.total += product.salesPrice;
+    let total = 0;
+
+    user.cart.items.forEach((item) => {
+      total += this.productService.calculateProductPrice(
+        item.product,
+        item.quantity,
+        item.combination,
+      );
+    });
+
+    user.cart.total = total;
 
     return user.save();
   }
@@ -58,7 +83,11 @@ export class UserService {
 
     if (!product) return null;
 
-    const user = await this.userModel.findById(userId);
+    const user = await this.userModel
+      .findById(userId)
+      .populate('cart.items.product')
+      .populate('cart.items.combination')
+      .exec();
 
     if (!user) return null;
 
@@ -72,7 +101,11 @@ export class UserService {
       let total = 0;
 
       user.cart.items.forEach((item) => {
-        total += item.product.salesPrice * item.quantity;
+        total += this.productService.calculateProductPrice(
+          item.product,
+          item.quantity,
+          item.combination,
+        );
       });
 
       user.cart.total = total;

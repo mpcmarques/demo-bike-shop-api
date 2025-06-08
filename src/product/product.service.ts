@@ -118,8 +118,6 @@ export class ProductService {
       }
     }
 
-    console.log(product);
-
     return product;
   }
 
@@ -159,5 +157,28 @@ export class ProductService {
 
   async findById(id: string): Promise<Product | null> {
     return this.productModel.findById(id);
+  }
+
+  calculateProductPrice(
+    product: Product,
+    quantity: number,
+    combination?: Product[],
+  ) {
+    console.log(product);
+    if (combination && combination.length > 0) {
+      let price = 0;
+
+      combination.forEach((product) => {
+        price += this.calculateProductPrice(product, 1);
+      });
+
+      return price * quantity;
+    }
+
+    if (product.salesPrice) {
+      return product.salesPrice * quantity;
+    }
+
+    return product.listPrice * quantity;
   }
 }

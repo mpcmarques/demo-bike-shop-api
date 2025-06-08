@@ -52,12 +52,7 @@ UserSchema.pre('save', async function (next) {
 UserSchema.method(
   'isValidPassword',
   async function (password: string): Promise<boolean> {
-    console.log(password, this.salt);
-
     const hashedPassword = await hash(password, this.salt);
-
-    console.log(hashedPassword, this.password);
-
     return hashedPassword === this.password;
   },
 );
