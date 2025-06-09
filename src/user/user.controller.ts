@@ -13,12 +13,14 @@ import { User } from './interfaces/user.interface';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RemoveFromCartDto } from './dto/remove-from-cart-dto';
+import { Public } from 'src/auth/auth.decorators';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @Public()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }

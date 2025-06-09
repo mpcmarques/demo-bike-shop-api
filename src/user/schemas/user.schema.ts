@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
   city: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  salt: { type: String, required: true },
+  salt: { type: String },
   roles: { type: [String], default: ['user'] },
   cart: { type: CartSchema, default: { total: 0, items: [] } },
 });
@@ -52,6 +52,8 @@ UserSchema.pre('save', async function (next) {
 UserSchema.method(
   'isValidPassword',
   async function (password: string): Promise<boolean> {
+    if (!this.salt) return false;
+
     const hashedPassword = await hash(password, this.salt);
     return hashedPassword === this.password;
   },
