@@ -53,7 +53,6 @@ export const ProductSchema = new mongoose.Schema({
   composed: {
     type: [[ComposedProductsSchema]],
     required: false,
-    default: null,
   },
   variants: {
     type: [
@@ -63,7 +62,6 @@ export const ProductSchema = new mongoose.Schema({
       },
     ],
     required: false,
-    default: null,
   },
 });
 

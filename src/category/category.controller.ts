@@ -25,14 +25,15 @@ export class CategoryController {
   }
 
   @Get('menu')
+  @Public()
   async getMenuCategories(): Promise<Category[]> {
     return this.categoryService.getMenuCategories();
   }
 
   @Get()
   async findAll(
-    @Query('limit') limit: number,
-    @Query('skip') skip: number,
+    @Query('limit') limit?: number,
+    @Query('skip') skip?: number,
   ): Promise<Category[]> {
     return this.categoryService.findAll(limit, skip);
   }

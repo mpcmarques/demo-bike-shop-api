@@ -19,8 +19,18 @@ export class CategoryService {
     return createdCategory.save();
   }
 
-  async findAll(limit: number = 10, skip: number = 0): Promise<Category[]> {
-    return this.categoryModel.find().limit(limit).skip(skip).exec();
+  async findAll(limit?: number, skip?: number): Promise<Category[]> {
+    const query = this.categoryModel.find();
+
+    if (limit) {
+      query.limit(limit);
+    }
+
+    if (skip) {
+      query.skip(skip);
+    }
+
+    return query.exec();
   }
 
   async getMenuCategories(): Promise<Category[]> {
