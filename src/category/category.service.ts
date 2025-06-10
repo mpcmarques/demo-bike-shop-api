@@ -4,6 +4,7 @@ import { Category } from './interfaces/category.interface';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Product } from 'src/product/interfaces/product.interface';
 import { ProductService } from 'src/product/product.service';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -18,8 +19,16 @@ export class CategoryService {
     return createdCategory.save();
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryModel.find().exec();
+  async findAll(limit: number = 10, skip: number = 0): Promise<Category[]> {
+    return this.categoryModel.find().limit(limit).skip(skip).exec();
+  }
+
+  async getMenuCategories(): Promise<Category[]> {
+    return this.categoryModel
+      .find({
+        showInMenu: true,
+      })
+      .exec();
   }
 
   async findByName(name: string): Promise<Category | null> {
@@ -51,5 +60,21 @@ export class CategoryService {
     } = { $text: { $search: name } };
 
     return this.categoryModel.find(query);
+  }
+
+  async update(updateCategoryDto: UpdateCategoryDto) {
+    const { name, label, description, showInMenu } = updateCategoryDto;
+
+    const result = this.categoryModel.findOneAndUpdate(
+      { name: updateCategoryDto.name },
+      {
+        name,
+        label,
+        description,
+        showInMenu,
+      },
+    );
+
+    return result;
   }
 }

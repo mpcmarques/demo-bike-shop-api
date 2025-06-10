@@ -6,12 +6,14 @@ import {
   Param,
   NotFoundException,
   Query,
+  Put,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
 import { Category } from './interfaces/category.interface';
 import { Public } from 'src/auth/auth.decorators';
 import { ObjectId } from 'mongoose';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -22,10 +24,17 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-  @Public()
+  @Get('menu')
+  async getMenuCategories(): Promise<Category[]> {
+    return this.categoryService.getMenuCategories();
+  }
+
   @Get()
-  async findAll(): Promise<Category[]> {
-    return this.categoryService.findAll();
+  async findAll(
+    @Query('limit') limit: number,
+    @Query('skip') skip: number,
+  ): Promise<Category[]> {
+    return this.categoryService.findAll(limit, skip);
   }
 
   @Public()
@@ -62,5 +71,10 @@ export class CategoryController {
   @Get('/search/:name')
   async search(@Param() params: { name: string }): Promise<Category[] | null> {
     return this.categoryService.search(params.name);
+  }
+
+  @Put()
+  async update(@Body() updateCategoryDto: UpdateCategoryDto) {
+    return this.categoryService.update(updateCategoryDto);
   }
 }

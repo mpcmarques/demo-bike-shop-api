@@ -25,7 +25,6 @@ export class ProductService {
   }
 
   async update(updateProductDto: CreateProductDto) {
-    // console.log(updateProductDto);
     const {
       name,
       label,
