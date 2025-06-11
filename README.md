@@ -1,4 +1,6 @@
-# Problem Description
+# Fake Bike Shop E-Commerce API
+
+## Problem Description
 
 You're tasked with building a website that allows Marcus, a bicycle shop owner, to sell his bicycles. Marcus owns a growing business and now wants to sell online. He also tells you that bicycles are his main product, but if the business continues to grow, he will surely start selling other sports-related items such as skis, surfboards, roller skates, etc. It would be a nice bonus if the same website allowed him to sell those things as well.What makes Marcus's business successful is that customers can fully customize their bicycles. They can select many different options for the various parts of the bicycle.
 Here is an incomplete list of all the parts and their possible choices, to give an example:
