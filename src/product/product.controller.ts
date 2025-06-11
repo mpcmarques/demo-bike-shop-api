@@ -10,17 +10,19 @@ import { Role } from 'src/auth/role.enum';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Roles(Role.Admin)
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
+  @Roles(Role.Admin)
   @Put()
   async update(@Body() updateProductDto: CreateProductDto) {
     return this.productService.update(updateProductDto);
   }
 
-  @Public()
+  @Roles(Role.Admin)
   @Get()
   async findAll(
     @Query('limit') limit: number,

@@ -30,13 +30,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @UseGuards(AuthGuard)
   @Post('cart')
   async addToCart(@Request() req, @Body() addToCartDto: AddToCartDto) {
     return this.userService.addToCart(req.user.sub, addToCartDto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('cart')
   async removeFromCart(
     @Request() req,

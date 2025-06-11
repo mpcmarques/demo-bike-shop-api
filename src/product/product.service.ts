@@ -59,8 +59,13 @@ export class ProductService {
     return result;
   }
 
-  async findAll(limit: number = 10, skip: number = 0): Promise<Product[]> {
-    return this.productModel.find().limit(limit).skip(skip).exec();
+  async findAll(limit?: number, skip?: number): Promise<Product[]> {
+    const query = this.productModel.find();
+
+    if (limit) query.limit(limit);
+    if (skip) query.skip(skip);
+
+    return query.exec();
   }
 
   async findByName(name: string): Promise<Product | null> {

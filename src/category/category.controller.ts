@@ -14,15 +14,12 @@ import { Category } from './interfaces/category.interface';
 import { Public } from 'src/auth/auth.decorators';
 import { ObjectId } from 'mongoose';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/auth/role.enum';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-
-  @Post()
-  async create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
-  }
 
   @Get('menu')
   @Public()
@@ -74,6 +71,13 @@ export class CategoryController {
     return this.categoryService.search(params.name);
   }
 
+  @Roles(Role.Admin)
+  @Post()
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
+    return this.categoryService.create(createCategoryDto);
+  }
+
+  @Roles(Role.Admin)
   @Put()
   async update(@Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.update(updateCategoryDto);
