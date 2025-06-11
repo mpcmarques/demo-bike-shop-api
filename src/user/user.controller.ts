@@ -1,17 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Request, Delete } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { User } from './interfaces/user.interface';
 import { AddToCartDto } from './dto/add-to-cart.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { RemoveFromCartDto } from './dto/remove-from-cart-dto';
 import { Public } from 'src/auth/auth.decorators';
 

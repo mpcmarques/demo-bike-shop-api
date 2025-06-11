@@ -29,6 +29,8 @@ export class UserService {
       .findOne({ email: email })
       .populate('cart.items.product')
       .populate('cart.items.combination')
+      .populate('-password')
+      .populate('-salt')
       .exec();
   }
 
