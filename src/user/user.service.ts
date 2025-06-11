@@ -24,13 +24,16 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
+  async getOne(email: string): Promise<User | null | undefined> {
+    return this.userModel.findOne({ email: email }).exec();
+  }
+
   async findOne(email: string): Promise<User | null | undefined> {
     return this.userModel
       .findOne({ email: email })
       .populate('cart.items.product')
       .populate('cart.items.combination')
-      .populate('-password')
-      .populate('-salt')
+      .select('-password -salt')
       .exec();
   }
 
