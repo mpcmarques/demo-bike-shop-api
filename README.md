@@ -32,7 +32,13 @@ This document summarizes the main database entities and their relationships, bas
 
 ---
 
-#### Entity Relationship Diagram (ERD)
+# Database Schema Relationships & Implemented Solution
+
+This document summarizes the main database entities, their relationships, and the implemented solution based on the actual Mongoose schemas and code in this project.
+
+---
+
+## Entity Relationship Diagram (ERD)
 
 ```plaintext
 +----------------+        +----------------+        +----------------+
@@ -43,7 +49,7 @@ This document summarizes the main database entities and their relationships, bas
 | label          |        | label          |        +----------------+
 | description    |        | description    |
 | showInMenu     |        | image          |
-+----------------+        | category_id    |
++----------------+        | category       |
                           | variationAttrs |
                           | listPrice      |
                           | salesPrice     |
@@ -72,9 +78,9 @@ This document summarizes the main database entities and their relationships, bas
 
 ---
 
-### Summary of Relationships
+## Summary of Relationships
 
-#### Category (`category/schemas/category.schema.ts`)
+### Category (`category/schemas/category.schema.ts`)
 - **Fields:** `name`, `label`, `description`, `showInMenu`
 - **Relationship:**  
   - One **Category** can have many **Products** (referenced by `category` field in Product).
@@ -92,7 +98,7 @@ This document summarizes the main database entities and their relationships, bas
   - **Variation Attributes:**  
     - Each product can have an array of variation attributes (e.g., color, size, finish)
 
-#### User (`user/schemas/user.schema.ts`)
+### User (`user/schemas/user.schema.ts`)
 - **Fields:**  
   - User info, roles, and a `cart`
 - **Cart:**  
@@ -104,13 +110,73 @@ This document summarizes the main database entities and their relationships, bas
 
 ---
 
-### Key Points
+## Implemented Solution Overview
 
-- **Products** are highly flexible: they can be simple, variants, or composed of other products.
-- **Variants** allow for options like frame type, finish, wheels, etc., as separate products linked to a master.
-- **Composed** products enable custom builds (e.g., a bike made of selected parts).
+### Technologies Utilized
+
+- **NestJS**: Modular Node.js framework for building scalable server-side applications.
+- **Mongoose**: ODM for MongoDB, used for schema definition and data modeling.
+- **TypeScript**: Type safety and modern JavaScript features.
+- **bcrypt**: Password hashing for user authentication.
+- **JWT**: JSON Web Tokens for stateless authentication.
+- **class-validator**: DTO validation for incoming requests.
+- **@nestjs/event-emitter**: Event-driven architecture for product creation events.
+
+### Authentication & Authorization
+
+- **JWT Authentication**:  
+  - Implemented via a custom `AuthGuard` (`src/auth/auth.guard.ts`).
+  - Users authenticate with email and password; JWT is issued on login.
+  - JWT is required for protected endpoints; user info is attached to requests.
+
+- **Role-based Authorization**:  
+  - Roles (`user`, `admin`) are defined in [`src/auth/role.enum.ts`](src/auth/role.enum.ts).
+  - `RolesGuard` (`src/auth/roles.guard.ts`) checks for required roles using a custom decorator.
+  - Admin-only endpoints are protected using `@Roles(Role.Admin)`.
+
+### Request & Schema Validation
+
+- **DTO Validation**:  
+  - All incoming requests are validated using DTOs and `class-validator` decorators (e.g., `@IsString()`, `@IsNotEmpty()`).
+  - Global validation pipe is enabled in [`src/main.ts`](src/main.ts).
+
+- **Schema Validation**:  
+  - Mongoose schemas strictly define required fields, types, and constraints for all entities.
+  - Unique and required constraints are enforced at the schema level (e.g., unique product names, required user fields).
+
+### Product Customization & Cart Logic
+
+- **Product Variants & Composition**:  
+  - Products can be "master", "variant", or "composed".
+  - Variants allow for different options (frame, finish, wheels, etc.) as separate products linked to a master.
+  - Composed products enable custom builds (e.g., a bike made of selected parts).
+
+- **Cart Structure**:  
+  - Each user has a cart with items referencing products and their combinations.
+  - Cart total is recalculated on every add/remove operation.
+
+- **Stock & Pricing**:  
+  - Each product/variant tracks its own stock and pricing.
+  - Price calculation supports composed products and quantity.
+
+### API Structure
+
+- **RESTful Controllers**:  
+  - Separate controllers for products, categories, users, and authentication.
+  - Public and protected endpoints, with role-based access where needed.
+
+- **Event-driven Updates**:  
+  - Product creation emits events for further processing or notifications.
+
+---
+
+## Key Points
+
+- **Products** are highly flexible: simple, variants, or composed of other products.
 - **Categories** organize products (e.g., Bicycles, Skis).
 - **Users** have a cart that references products and their combinations.
+- **Authentication** is JWT-based; **authorization** is role-based.
+- **Validation** is enforced at both DTO and schema levels.
 
 ---
 
@@ -118,3 +184,4 @@ This document summarizes the main database entities and their relationships, bas
 - Customizable products with variants and composed parts.
 - Stock and pricing per product/variant.
 - User carts with custom combinations.
+- Secure, validated, and role-aware API endpoints.
