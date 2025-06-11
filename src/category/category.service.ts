@@ -5,6 +5,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { Product } from 'src/product/interfaces/product.interface';
 import { ProductService } from 'src/product/product.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { DeleteCategoryDto } from './dto/delete-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -86,5 +87,9 @@ export class CategoryService {
     );
 
     return result;
+  }
+
+  async delete(deleteCategoryDto: DeleteCategoryDto) {
+    return this.categoryModel.findOneAndDelete({ _id: deleteCategoryDto.id });
   }
 }

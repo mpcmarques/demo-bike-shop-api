@@ -7,7 +7,6 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly name: string;
 
-  @IsString()
   readonly masterProduct?: string;
 
   @IsString()
@@ -18,17 +17,18 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly category: string;
 
-  @IsString()
   readonly image?: string;
 
   readonly variationAttributes: { [key: string]: string };
 
   @IsNumber()
   @Min(0)
+  @IsNotEmpty()
   readonly listPrice: number;
 
   @IsNumber()
   @Min(0)
+  @IsNotEmpty()
   readonly salesPrice: number;
 
   @IsNumber()
@@ -37,8 +37,6 @@ export class CreateProductDto {
 
   readonly productType?: 'master' | 'variant' | 'composed';
 
-  @IsString()
-  @IsNotEmpty()
   readonly label: string;
 
   readonly composed?: { category: Category; product: Product }[][];

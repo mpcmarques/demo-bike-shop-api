@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Param, Query, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 import { Product } from './interfaces/product.interface';
 import { Public } from 'src/auth/auth.decorators';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/role.enum';
+import { DeleteProductDto } from './dto/delete-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -20,6 +30,12 @@ export class ProductController {
   @Put()
   async update(@Body() updateProductDto: CreateProductDto) {
     return this.productService.update(updateProductDto);
+  }
+
+  @Roles(Role.Admin)
+  @Delete()
+  async delete(@Body() deleteProductDto: DeleteProductDto) {
+    return this.productService.delete(deleteProductDto);
   }
 
   @Roles(Role.Admin)

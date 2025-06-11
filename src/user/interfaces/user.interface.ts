@@ -20,7 +20,7 @@ export interface User extends Document {
   readonly city: string;
   readonly email: string;
   readonly password: string;
-  readonly role: string;
   isValidPassword(password: string): Promise<boolean>;
   readonly cart: Cart;
+  readonly roles: Array<'admin' | 'user' | 'guest'>;
 }

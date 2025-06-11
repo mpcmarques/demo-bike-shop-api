@@ -3,6 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Product } from './interfaces/product.interface';
 import { CreateProductDto } from './dto/create-product.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { DeleteProductDto } from './dto/delete-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -57,6 +58,10 @@ export class ProductService {
     );
 
     return result;
+  }
+
+  async delete(deleteProductDto: DeleteProductDto) {
+    return this.productModel.findOneAndDelete({ _id: deleteProductDto.id });
   }
 
   async findAll(limit?: number, skip?: number): Promise<Product[]> {
@@ -168,7 +173,6 @@ export class ProductService {
     quantity: number,
     combination?: Product[],
   ) {
-    console.log(product);
     if (combination && combination.length > 0) {
       let price = 0;
 

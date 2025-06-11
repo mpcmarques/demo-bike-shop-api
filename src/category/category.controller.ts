@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Query,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
@@ -16,6 +17,7 @@ import { ObjectId } from 'mongoose';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/role.enum';
+import { DeleteCategoryDto } from './dto/delete-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -28,6 +30,7 @@ export class CategoryController {
   }
 
   @Get()
+  @Roles(Role.Admin)
   async findAll(
     @Query('limit') limit?: number,
     @Query('skip') skip?: number,
@@ -81,5 +84,11 @@ export class CategoryController {
   @Put()
   async update(@Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.update(updateCategoryDto);
+  }
+
+  @Roles(Role.Admin)
+  @Delete()
+  async delete(@Body() deleteCategoryDto: DeleteCategoryDto) {
+    return this.categoryService.delete(deleteCategoryDto);
   }
 }
