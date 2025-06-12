@@ -170,17 +170,24 @@ This document summarizes the main database entities, their relationships, and th
 
 ---
 
-## Key Points
+
+## Main User Actions
+
+Described in https://github.com/mpcmarques/bike-shop-webapp
+
+---
+
+## Notes
 
 - **Products** are highly flexible: simple, variants, or composed of other products.
-- **Categories** organize products (e.g., Bicycles, Skis).
+- **Categories** organize products (e.g., Bicycles, Skis), and can also be shown on the Frontend UI Menu.
 - **Users** have a cart that references products and their combinations.
 - **Authentication** is JWT-based; **authorization** is role-based.
 - **Validation** is enforced at both DTO and schema levels.
 
 ---
 
-**This structure supports:**
+**supports:**
 - Customizable products with variants and composed parts.
 - Stock and pricing per product/variant.
 - User carts with custom combinations.
