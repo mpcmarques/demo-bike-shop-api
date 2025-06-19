@@ -1,6 +1,7 @@
 import { Category } from 'src/category/interfaces/category.interface';
 import { Product } from '../interfaces/product.interface';
 import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
@@ -13,7 +14,6 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly description: string;
 
-  @IsString()
   @IsNotEmpty()
   readonly category: string;
 
@@ -21,22 +21,25 @@ export class CreateProductDto {
 
   readonly variationAttributes: { [key: string]: string };
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @IsNotEmpty()
   readonly listPrice: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @IsNotEmpty()
   readonly salesPrice: number;
 
-  @IsNumber()
-  @Min(0)
   readonly stock?: number;
 
+  @IsNotEmpty()
   readonly productType?: 'master' | 'variant' | 'composed';
 
+  @IsNotEmpty()
+  @IsString()
   readonly label: string;
 
   readonly composed?: { category: Category; product: Product }[][];
